@@ -3,7 +3,7 @@ package com.fitastic.controller;
 import com.fitastic.repository.ExerciseRepository;
 import com.fitastic.entity.Exercise;
 import com.fitastic.service.ExerciseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,12 +11,11 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 public class ExerciseController {
 
-    @Autowired
-    private ExerciseRepository exerciseRepository;
 
-    @Autowired
+    private ExerciseRepository exerciseRepository;
     private ExerciseService exerciseService;
 
     @PostMapping("/exercise")
