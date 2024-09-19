@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      host: 'localhost'
+      port: 27017
+      database: 'fitastic'
+      username: 'admin'
+      password: 'pass'
+      authentication-database: 'admin'
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: 'DEBUG'
