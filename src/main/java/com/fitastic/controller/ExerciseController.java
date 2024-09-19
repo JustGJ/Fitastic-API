@@ -18,6 +18,11 @@ public class ExerciseController {
     private ExerciseRepository exerciseRepository;
     private ExerciseService exerciseService;
 
+    @GetMapping("/exercises")
+    public List<Exercise> getExercises() {
+        return exerciseService.getAll();
+    }
+
     @PostMapping("/exercise")
     public ResponseEntity<Exercise> create(@RequestBody Exercise product) {
         product = exerciseRepository.save(product);
@@ -25,8 +30,23 @@ public class ExerciseController {
                 .body(product);
     }
 
-    @GetMapping("/exercises")
-    public List<Exercise> getExercises() {
-        return exerciseService.getAll();
+    @GetMapping("/exercises/{name}")
+    public ResponseEntity<Exercise> getExercise(@PathVariable String name) {
+        try{
+            Exercise exercise = exerciseService.getExerciseByName(name);
+            return ResponseEntity.ok(exercise);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/exercises/{id}")
+    public ResponseEntity<Exercise> delete(@PathVariable String id) {
+         try{
+            exerciseService.deleteExerciseById(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
