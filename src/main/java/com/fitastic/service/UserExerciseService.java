@@ -1,18 +1,18 @@
 package com.fitastic.service;
 
-import com.fitastic.entity.DefaultExercise;
 import com.fitastic.entity.UserExercise;
 import com.fitastic.repository.UserExerciseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static com.fitastic.repository.UserExerciseRepository.*;
 
 @Service
 @AllArgsConstructor
+@Validated
 public class UserExerciseService {
 
     private UserExerciseRepository userExerciseRepository;
@@ -34,7 +34,13 @@ public class UserExerciseService {
 
         exercise.setName(exerciseUpdate.getName());
         exercise.setDescription(exerciseUpdate.getDescription());
+        exercise.setInstructions(exerciseUpdate.getInstructions());
         exercise.setTarget(exerciseUpdate.getTarget());
+        exercise.setAdvices(exerciseUpdate.getAdvices());
+        exercise.setImage(exerciseUpdate.getImage());
+        exercise.setVideo(exerciseUpdate.getVideo());
+        exercise.setUserId(exerciseUpdate.getUserId());
+        exercise.setSessionId(exerciseUpdate.getSessionId());
         return userExerciseRepository.save(exercise);
     }
 
