@@ -24,9 +24,9 @@ public class UserExerciseController {
     public ResponseEntity<List<UserExercise>> getAllUserExercises() {
         List<UserExercise> exercises = userExerciseService.getAll();
         if (exercises.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(exercises, HttpStatus.OK);
+        return ResponseEntity.ok(exercises);
     }
 
     @PostMapping

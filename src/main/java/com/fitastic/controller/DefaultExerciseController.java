@@ -18,16 +18,16 @@ public class DefaultExerciseController {
     private DefaultExerciseService DefaultExerciseService;
 
     @GetMapping
-    public ResponseEntity<List<DefaultExercise>> getExercises() {
+    public ResponseEntity<List<DefaultExercise>> getAllDefaultExercises() {
         List<DefaultExercise> exercises = DefaultExerciseService.getAll();
         if (exercises.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity<>(exercises, HttpStatus.OK);
+        return ResponseEntity.ok(exercises);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DefaultExercise> getExercise(@PathVariable String id) {
+    public ResponseEntity<DefaultExercise> getDefaultExercise(@PathVariable String id) {
         try{
             DefaultExercise exercise = DefaultExerciseService.getDefaultExerciseById(id);
             return ResponseEntity.ok(exercise);
