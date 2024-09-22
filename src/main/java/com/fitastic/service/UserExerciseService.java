@@ -1,5 +1,6 @@
 package com.fitastic.service;
 
+import com.fitastic.entity.DefaultExercise;
 import com.fitastic.entity.UserExercise;
 import com.fitastic.repository.UserExerciseRepository;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 
 @Service
@@ -21,16 +23,13 @@ public class UserExerciseService {
         return userExerciseRepository.findAll();
     }
 
-    public UserExercise getExerciseById(String id) {
-        List<UserExercise> exercises = userExerciseRepository.findAll();
-        return exercises.stream()
-                .filter(exercise -> exercise.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Exercise not found with id: " + id));
+    public UserExercise getUserExerciseById(String id) {
+        Optional<UserExercise> exercise = userExerciseRepository.findById(id);
+        return exercise.orElse(null);
     }
 
-    public UserExercise updateExercise(String id, UserExercise exerciseUpdate) {
-        UserExercise exercise = this.getExerciseById(id);
+    public UserExercise updateUserExercise(String id, UserExercise exerciseUpdate) {
+        UserExercise exercise = this.getUserExerciseById(id);
 
         exercise.setName(exerciseUpdate.getName());
         exercise.setDescription(exerciseUpdate.getDescription());
@@ -44,7 +43,7 @@ public class UserExerciseService {
         return userExerciseRepository.save(exercise);
     }
 
-    public void deleteExerciseById(String id) {
+    public void deleteUserExerciseById(String id) {
         if (userExerciseRepository.existsById(id)){
             userExerciseRepository.deleteById(id);
         } else {

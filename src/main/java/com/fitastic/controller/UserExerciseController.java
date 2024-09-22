@@ -5,6 +5,7 @@ import com.fitastic.repository.UserExerciseRepository;
 import com.fitastic.service.UserExerciseService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +21,12 @@ public class UserExerciseController {
     private UserExerciseService userExerciseService;
 
     @GetMapping
-    public List<UserExercise> getAllUserExercises() {
-        return userExerciseService.getAll();
+    public ResponseEntity<List<UserExercise>> getAllUserExercises() {
+        List<UserExercise> exercises = userExerciseService.getAll();
+        if (exercises.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(exercises, HttpStatus.OK);
     }
 
     @PostMapping
@@ -31,9 +36,9 @@ public class UserExerciseController {
                 .body(product);
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<UserExercise> updateUserExercise(@PathVariable String id, @RequestBody UserExercise exerciseUpdate) {
-        UserExercise exercise = userExerciseService.updateExercise(id, exerciseUpdate);
+        UserExercise exercise = userExerciseService.updateUserExercise(id, exerciseUpdate);
         if (exercise == null) {
             return ResponseEntity.notFound().build();
         }
@@ -43,7 +48,7 @@ public class UserExerciseController {
     @GetMapping("/{id}")
     public ResponseEntity<UserExercise> getUserExercise(@PathVariable String id) {
         try{
-            UserExercise exercise = userExerciseService.getExerciseById(id);
+            UserExercise exercise = userExerciseService.getUserExerciseById(id);
             return ResponseEntity.ok(exercise);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -53,7 +58,7 @@ public class UserExerciseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<UserExercise> deleteUserExercise(@PathVariable String id) {
          try{
-            userExerciseService.deleteExerciseById(id);
+            userExerciseService.deleteUserExerciseById(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

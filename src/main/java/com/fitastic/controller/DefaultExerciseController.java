@@ -1,6 +1,8 @@
 package com.fitastic.controller;
 
 import com.fitastic.entity.DefaultExercise;
+import com.fitastic.entity.UserExercise;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import com.fitastic.service.DefaultExerciseService;
@@ -13,17 +15,21 @@ import java.util.List;
 @RequestMapping("/api/defaultExercises")
 public class DefaultExerciseController {
 
-    private DefaultExerciseService exerciseService;
+    private DefaultExerciseService DefaultExerciseService;
 
-    @GetMapping("/all")
-    public List<DefaultExercise> getExercises() {
-        return exerciseService.getAll();
+    @GetMapping
+    public ResponseEntity<List<DefaultExercise>> getExercises() {
+        List<DefaultExercise> exercises = DefaultExerciseService.getAll();
+        if (exercises.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(exercises, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<DefaultExercise> getExercise(@PathVariable String id) {
         try{
-            DefaultExercise exercise = exerciseService.getExerciseById(id);
+            DefaultExercise exercise = DefaultExerciseService.getDefaultExerciseById(id);
             return ResponseEntity.ok(exercise);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
