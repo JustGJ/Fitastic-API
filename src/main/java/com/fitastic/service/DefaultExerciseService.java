@@ -23,4 +23,5 @@ public class DefaultExerciseService {
         Optional<DefaultExercise> exercise = defaultExerciseRepository.findById(id);
         return exercise.orElse(null);
     }
+
 }
