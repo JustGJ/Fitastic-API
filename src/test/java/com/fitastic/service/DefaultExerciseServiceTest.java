@@ -29,17 +29,17 @@ public class DefaultExerciseServiceTest {
     }
 
     @Test
-    public void shouldReturnAllDefaultExercisesWithSuccess(){
+    void shouldReturnAllDefaultExercises(){
 
         DefaultExercise exercise1 = new DefaultExercise();
         exercise1.setId("1");
         exercise1.setName("Exercise1");
-        exercise1.setTarget("Upper body");
+        exercise1.setInstructions(new String[]{"Upper body"});
 
         DefaultExercise exercise2 = new DefaultExercise();
         exercise2.setId("2");
         exercise2.setName("Exercise2");
-        exercise2.setTarget("Lower body");
+        exercise2.setInstructions(new String[]{"Lower body"});
 
         List<DefaultExercise> mockExercises = new ArrayList<>();
         mockExercises.add(exercise1);
@@ -51,15 +51,17 @@ public class DefaultExerciseServiceTest {
 
         assertEquals(2, result.size());
         assertEquals("Exercise1", result.get(0).getName());
+        assertEquals("Upper body", result.get(0).getInstructions()[0]);
         assertEquals("Exercise2", result.get(1).getName());
+        assertEquals("Lower body", result.get(1).getInstructions()[0]);
     }
 
     @Test
-    public void shouldReturnDefaultExerciseById() {
+    void shouldReturnDefaultExerciseById() {
         DefaultExercise exersise = new DefaultExercise();
         exersise.setId("1");
         exersise.setName("Exercise");
-        exersise.setTarget("Upper body");
+        exersise.setInstructions(new String[]{"Upper body"});
 
         when(defaultExerciseRepository.findById("1")).thenReturn(Optional.of(exersise));
 
@@ -67,7 +69,7 @@ public class DefaultExerciseServiceTest {
 
         assertNotNull(result);
         assertEquals("Exercise", result.getName());
-        assertEquals("Upper body", result.getTarget());
+        assertEquals("Upper body", result.getInstructions()[0]);
     }
 
 }
