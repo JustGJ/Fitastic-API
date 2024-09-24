@@ -27,4 +27,5 @@ public class DefaultExercise {
     private String image;
     private String [] advices;
     private String video;
+
 }
