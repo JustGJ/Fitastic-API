@@ -75,7 +75,7 @@ class UserExerciseServiceTest {
     }
 
     @Test
-    void shouldReturnUpdateUserExercise() {
+    void shouldUpdateUserExercise() {
         UserExercise userExercise = new UserExercise();
         userExercise.setUserId("1");
         userExercise.setName("Exercise");
@@ -99,7 +99,7 @@ class UserExerciseServiceTest {
     }
 
     @Test
-    void shouldReturnDeleteUserExerciseById() {
+    void shouldDeleteUserExerciseById() {
         UserExercise userExercise = new UserExercise();
         userExercise.setUserId("1");
         userExercise.setName("Exercise");

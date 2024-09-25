@@ -49,12 +49,12 @@ class DefaultExerciseControllerTest {
 
     @Test
     void shouldReturnDefaultExercise() throws Exception {
-        DefaultExercise exercise1 = new DefaultExercise();
-        exercise1.setId("1");
-        exercise1.setName("Push-up");
+        DefaultExercise exercise = new DefaultExercise();
+        exercise.setId("1");
+        exercise.setName("Push-up");
 
 
-        when(defaultExerciseService.getDefaultExerciseById("1")).thenReturn(exercise1);
+        when(defaultExerciseService.getDefaultExerciseById("1")).thenReturn(exercise);
 
         mockMvc.perform(get("/api/defaultExercises/1"))
                 .andExpect(status().isOk())

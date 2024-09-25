@@ -22,6 +22,10 @@ public class UserExerciseService {
         return userExerciseRepository.findAll();
     }
 
+    public UserExercise createUserExercise(UserExercise userExercise) {
+        return userExerciseRepository.save(userExercise);
+    }
+
     public UserExercise getUserExerciseById(String id) {
         Optional<UserExercise> exercise = userExerciseRepository.findById(id);
         return exercise.orElse(null);

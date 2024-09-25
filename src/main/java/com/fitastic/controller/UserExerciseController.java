@@ -31,9 +31,9 @@ public class UserExerciseController {
 
     @PostMapping
     public ResponseEntity<UserExercise> createUserExercise(@Valid @RequestBody UserExercise product) {
-        product = userExerciseRepository.save(product);
-        return ResponseEntity.created(URI.create("/exercise/" + product.getId()))
-                .body(product);
+        UserExercise savedProduct = userExerciseService.createUserExercise(product);
+        return ResponseEntity.created(URI.create("/exercise/" + savedProduct.getId()))
+                .body(savedProduct);
     }
 
     @PatchMapping("/{id}")
