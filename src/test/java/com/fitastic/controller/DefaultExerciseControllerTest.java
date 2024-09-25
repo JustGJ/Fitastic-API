@@ -48,6 +48,18 @@ class DefaultExerciseControllerTest {
     }
 
     @Test
-    void shouldReturnDefaultExercise() {
+    void shouldReturnDefaultExercise() throws Exception {
+        DefaultExercise exercise1 = new DefaultExercise();
+        exercise1.setId("1");
+        exercise1.setName("Push-up");
+
+
+        when(defaultExerciseService.getDefaultExerciseById("1")).thenReturn(exercise1);
+
+        mockMvc.perform(get("/api/defaultExercises/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.name").value("Push-up"));
     }
 }
