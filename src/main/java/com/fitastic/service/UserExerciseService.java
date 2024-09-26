@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
@@ -21,6 +20,10 @@ public class UserExerciseService {
 
     public List<UserExercise> getAll(){
         return userExerciseRepository.findAll();
+    }
+
+    public UserExercise createUserExercise(UserExercise userExercise) {
+        return userExerciseRepository.save(userExercise);
     }
 
     public UserExercise getUserExerciseById(String id) {

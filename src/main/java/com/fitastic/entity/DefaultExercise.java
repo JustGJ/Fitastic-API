@@ -22,9 +22,10 @@ public class DefaultExercise {
     private String name;
 
     private String target;
-    private String [] description;
+    private String description;
     private String [] instructions;
-    private String [] image;
+    private String image;
     private String [] advices;
     private String video;
+
 }
