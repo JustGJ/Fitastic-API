@@ -1,12 +1,7 @@
 spring:
   data:
     mongodb:
-      host: 'localhost'
-      port: 27017
-      database: 'fitastic'
-      username: 'admin'
-      password: 'pass'
-      authentication-database: 'admin'
+      uri: mongodb+srv://fitastic:admin@cluster0.ue4gs.mongodb.net/fitastic?retryWrites=true&w=majority
 logging:
   level:
     org:
@@ -14,4 +9,4 @@ logging:
         data:
           mongodb:
             core:
-              MongoTemplate: 'DEBUG'
+              MongoTemplate: DEBUG
