@@ -15,11 +15,11 @@ import java.util.List;
 @RequestMapping("/api/defaultExercises")
 public class DefaultExerciseController {
 
-    private DefaultExerciseService DefaultExerciseService;
+    private DefaultExerciseService defaultExerciseService;
 
     @GetMapping
     public ResponseEntity<List<DefaultExercise>> getExercises() {
-        List<DefaultExercise> exercises = DefaultExerciseService.getAll();
+        List<DefaultExercise> exercises = defaultExerciseService.getAll();
         if (exercises.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -29,7 +29,7 @@ public class DefaultExerciseController {
     @GetMapping("/{id}")
     public ResponseEntity<DefaultExercise> getExercise(@PathVariable String id) {
         try{
-            DefaultExercise exercise = DefaultExerciseService.getDefaultExerciseById(id);
+            DefaultExercise exercise = defaultExerciseService.getDefaultExerciseById(id);
             return ResponseEntity.ok(exercise);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
