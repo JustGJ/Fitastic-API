@@ -19,6 +19,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration class for the Fitastic application.
+ * This class configures Spring Security, including authentication
+ * mechanisms and access rules for different endpoints.
+ */
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
