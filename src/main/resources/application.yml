@@ -9,7 +9,6 @@ logging:
         data:
           mongodb:
             core:
-              MongoTemplate: DEBUG
               MongoTemplate: 'DEBUG'
 application:
   security:
