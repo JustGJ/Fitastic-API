@@ -1,6 +1,6 @@
 package com.fitastic.controller;
 
-import com.fitastic.config.UserRegisterDTO;
+import com.fitastic.dto.UserRegisterDTO;
 import com.fitastic.entity.AuthResponse;
 import com.fitastic.entity.LoginResponse;
 import com.fitastic.entity.User;

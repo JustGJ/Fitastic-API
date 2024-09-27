@@ -29,6 +29,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsImpService userDetailsImpService;
 
+    /**
+     * Performs the filtering of incoming requests to check for JWT authentication.
+     * Extracts the token from the Authorization header, validates it, and
+     * sets the authentication in the SecurityContext if valid.
+     *
+     * @param request the HttpServletRequest object containing the request made by the user
+     * @param response the HttpServletResponse object for the response to be sent to the user
+     * @param filterChain the FilterChain to continue the request-response flow
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs during the request processing
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -38,7 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        boolean isAuthHeaderValid = authHeader != null && authHeader.startsWith("Bearer ");
+
+        if (!isAuthHeaderValid) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -53,8 +66,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsImpService.loadUserByUsername(username);
 
-            // Validate the JWT token
             boolean isValidToken = jwtService.isValid(token, userDetails);
+
             if (isValidToken) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()

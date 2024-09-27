@@ -1,6 +1,6 @@
 package com.fitastic.service;
 
-import com.fitastic.config.UserRegisterDTO;
+import com.fitastic.dto.UserRegisterDTO;
 import com.fitastic.entity.*;
 import com.fitastic.repository.TokenRepository;
 import com.fitastic.repository.UserRepository;
