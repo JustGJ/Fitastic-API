@@ -6,41 +6,59 @@ import com.fitastic.repository.UserExerciseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
 import java.util.List;
 import java.util.Optional;
 
-// Service class for handling UserExercise-related business logic
+/**
+ * Service class for handling UserExercise-related business logic.
+ * Manages CRUD operations for user exercises, including retrieval, creation, update, and deletion.
+ */
 @Service
 @AllArgsConstructor
 @Validated
 public class UserExerciseService {
 
-    // Repository for UserExercise database operations
-    private UserExerciseRepository userExerciseRepository;
+    private final UserExerciseRepository userExerciseRepository;
 
-    // Retrieve all UserExercises from the database
+    /**
+     * Retrieves all UserExercises from the database.
+     *
+     * @return List of all UserExercise objects.
+     */
     public List<UserExercise> getAll(){
         return userExerciseRepository.findAll();
     }
 
-    // Create a new UserExercise in the database
+    /**
+     * Creates a new UserExercise in the database.
+     *
+     * @param userExercise The UserExercise object to be created.
+     * @return The created UserExercise object.
+     */
     public UserExercise createUserExercise(UserExercise userExercise) {
         return userExerciseRepository.save(userExercise);
     }
 
-    // Retrieve a specific UserExercise by its ID
-    // Returns null if the exercise is not found
+    /**
+     * Retrieves a specific UserExercise by its ID.
+     *
+     * @param id The ID of the UserExercise to retrieve.
+     * @return The requested UserExercise object, or null if not found.
+     */
     public UserExercise getUserExerciseById(String id) {
         Optional<UserExercise> exercise = userExerciseRepository.findById(id);
         return exercise.orElse(null);
     }
 
-    // Update an existing UserExercise
+    /**
+     * Updates an existing UserExercise.
+     *
+     * @param id The ID of the UserExercise to update.
+     * @param exerciseUpdate The UserExercise object containing updated information.
+     * @return The updated UserExercise object.
+     */
     public UserExercise updateUserExercise(String id, UserExercise exerciseUpdate) {
         UserExercise exercise = this.getUserExerciseById(id);
-
-        // Update all fields of the exercise
         exercise.setName(exerciseUpdate.getName());
         exercise.setDescription(exerciseUpdate.getDescription());
         exercise.setInstructions(exerciseUpdate.getInstructions());
@@ -50,13 +68,15 @@ public class UserExerciseService {
         exercise.setVideo(exerciseUpdate.getVideo());
         exercise.setUserId(exerciseUpdate.getUserId());
         exercise.setSessionId(exerciseUpdate.getSessionId());
-
-        // Save and return the updated exercise
         return userExerciseRepository.save(exercise);
     }
 
-    // Delete a UserExercise by its ID
-    // Throws a RuntimeException if the exercise is not found
+    /**
+     * Deletes a UserExercise by its ID.
+     *
+     * @param id The ID of the UserExercise to delete.
+     * @throws RuntimeException if the exercise is not found.
+     */
     public void deleteUserExerciseById(String id) {
         if (userExerciseRepository.existsById(id)){
             userExerciseRepository.deleteById(id);

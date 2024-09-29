@@ -9,37 +9,43 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-// REST Controller for handling DefaultExercise-related HTTP requests
+/**
+ * Controller for handling DefaultExercise-related operations.
+ * Manages retrieval of default exercises and individual exercise details.
+ */
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/defaultExercises")
 public class DefaultExerciseController {
 
-    // Service dependency for DefaultExercise operations
-    private DefaultExerciseService defaultExerciseService;
+    private final DefaultExerciseService defaultExerciseService;
 
-    // GET endpoint to retrieve all default exercises
+    /**
+     * Retrieves all default exercises.
+     *
+     * @return ResponseEntity containing a list of DefaultExercise objects or NO_CONTENT if empty.
+     */
     @GetMapping
     public ResponseEntity<List<DefaultExercise>> getExercises() {
         List<DefaultExercise> exercises = defaultExerciseService.getAll();
-        // If no exercises found, return 204 No Content
         if (exercises.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        // Return the list of exercises with 200 OK status
         return new ResponseEntity<>(exercises, HttpStatus.OK);
     }
 
-    // GET endpoint to retrieve a specific default exercise by ID
+    /**
+     * Retrieves a specific default exercise by its ID.
+     *
+     * @param id The ID of the default exercise to retrieve.
+     * @return ResponseEntity containing the requested DefaultExercise or NOT_FOUND if not exists.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<DefaultExercise> getExercise(@PathVariable String id) {
         try {
-            // Attempt to retrieve the exercise by ID
             DefaultExercise exercise = defaultExerciseService.getDefaultExerciseById(id);
-            // Return the exercise with 200 OK status
             return ResponseEntity.ok(exercise);
         } catch (RuntimeException e) {
-            // If exercise not found, return 404 Not Found
             return ResponseEntity.notFound().build();
         }
     }
