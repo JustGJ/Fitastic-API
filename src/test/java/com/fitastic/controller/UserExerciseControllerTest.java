@@ -15,8 +15,11 @@ import java.util.Arrays;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+/**
+ * Test class for UserExerciseController.
+ * Contains unit tests for the UserExerciseController methods.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserExerciseControllerTest {
@@ -27,8 +30,13 @@ class UserExerciseControllerTest {
     @MockBean
     private UserExerciseService userExerciseService;
 
+    /**
+     * Test case: Verify that GET request to /api/userExercises returns all user exercises.
+     *
+     * @throws Exception if an error occurs during the mock request
+     */
     @Test
-    void shouldReturnAllUserExercises() throws Exception{
+    void shouldReturnAllUserExercises() throws Exception {
         UserExercise exercise1 = new UserExercise();
         exercise1.setId("1");
         exercise1.setName("Push-up");
@@ -38,7 +46,6 @@ class UserExerciseControllerTest {
         exercise2.setId("2");
         exercise2.setName("Squat");
         exercise2.setUserId("1");
-
 
         when(userExerciseService.getAll()).thenReturn(Arrays.asList(exercise1, exercise2));
 
@@ -53,6 +60,11 @@ class UserExerciseControllerTest {
                 .andExpect(jsonPath("$[1].userId").value("1"));
     }
 
+    /**
+     * Test case: Verify that POST request to /api/userExercises creates a new user exercise.
+     *
+     * @throws Exception if an error occurs during the mock request
+     */
     @Test
     void shouldCreateUserExercise() throws Exception {
         UserExercise exercise = new UserExercise();
@@ -65,16 +77,20 @@ class UserExerciseControllerTest {
         String exerciseJson = "{\"id\":\"1\",\"name\":\"Push-up\",\"userId\" : \"1\"}";
 
         mockMvc.perform(post("/api/userExercises")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(exerciseJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(exerciseJson))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/exercise/1"))
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("Push-up"))
                 .andExpect(jsonPath("$.userId").value("1"));
-
     }
 
+    /**
+     * Test case: Verify that PATCH request to /api/userExercises/{id} updates an existing user exercise.
+     *
+     * @throws Exception if an error occurs during the mock request
+     */
     @Test
     void shouldUpdateUserExercise() throws Exception {
         UserExercise exercise = new UserExercise();
@@ -90,8 +106,8 @@ class UserExerciseControllerTest {
         when(userExerciseService.updateUserExercise("1", exerciseUpdated)).thenReturn(exerciseUpdated);
 
         mockMvc.perform(patch("/api/userExercises/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": \"1\", \"name\": \"Squat\", \"userId\" : \"1\"}"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\": \"1\", \"name\": \"Squat\", \"userId\" : \"1\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value("1"))
@@ -99,9 +115,13 @@ class UserExerciseControllerTest {
                 .andExpect(jsonPath("$.userId").value("1"));
     }
 
+    /**
+     * Test case: Verify that GET request to /api/userExercises/{id} returns a specific user exercise.
+     *
+     * @throws Exception if an error occurs during the mock request
+     */
     @Test
     void shouldReturnUserExercise() throws Exception {
-
         UserExercise exercise = new UserExercise();
         exercise.setId("1");
         exercise.setName("Push-up");
@@ -117,9 +137,13 @@ class UserExerciseControllerTest {
                 .andExpect(jsonPath("$.userId").value("1"));
     }
 
+    /**
+     * Test case: Verify that DELETE request to /api/userExercises/{id} deletes a specific user exercise.
+     *
+     * @throws Exception if an error occurs during the mock request
+     */
     @Test
     void shouldDeleteUserExercise() throws Exception {
-
         UserExercise exercise = new UserExercise();
         exercise.setId("1");
         exercise.setName("Push-up");

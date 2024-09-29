@@ -15,6 +15,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for DefaultExerciseService.
+ * Contains unit tests for the DefaultExerciseService methods.
+ */
 public class DefaultExerciseServiceTest {
 
     @Mock
@@ -23,14 +27,19 @@ public class DefaultExerciseServiceTest {
     @InjectMocks
     private DefaultExerciseService defaultExerciseService;
 
+    /**
+     * Initializes mocks before each test.
+     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Test case: Verify that getAll() method returns all default exercises.
+     */
     @Test
     void shouldReturnAllDefaultExercises(){
-
         DefaultExercise exercise1 = new DefaultExercise();
         exercise1.setId("1");
         exercise1.setName("Exercise1");
@@ -56,6 +65,9 @@ public class DefaultExerciseServiceTest {
         assertEquals("Lower body", result.get(1).getInstructions()[0]);
     }
 
+    /**
+     * Test case: Verify that getDefaultExerciseById() method returns the correct default exercise.
+     */
     @Test
     void shouldReturnDefaultExerciseById() {
         DefaultExercise exersise = new DefaultExercise();
@@ -71,5 +83,4 @@ public class DefaultExerciseServiceTest {
         assertEquals("Exercise", result.getName());
         assertEquals("Upper body", result.getInstructions()[0]);
     }
-
 }

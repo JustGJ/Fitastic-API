@@ -15,6 +15,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Test class for DefaultExerciseController.
+ * Contains unit tests for the DefaultExerciseController methods.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 class DefaultExerciseControllerTest {
@@ -25,7 +29,11 @@ class DefaultExerciseControllerTest {
     @MockBean
     private DefaultExerciseService defaultExerciseService;
 
-
+    /**
+     * Test case: Verify that the GET request to /api/defaultExercises returns a list of default exercises.
+     *
+     * @throws Exception if an error occurs during the mock request
+     */
     @Test
     void shouldReturnDefaultExercises() throws Exception {
         DefaultExercise exercise1 = new DefaultExercise();
@@ -47,12 +55,16 @@ class DefaultExerciseControllerTest {
                 .andExpect(jsonPath("$[1].name").value("Squat"));
     }
 
+    /**
+     * Test case: Verify that the GET request to /api/defaultExercises/{id} returns a specific default exercise.
+     *
+     * @throws Exception if an error occurs during the mock request
+     */
     @Test
     void shouldReturnDefaultExercise() throws Exception {
         DefaultExercise exercise = new DefaultExercise();
         exercise.setId("1");
         exercise.setName("Push-up");
-
 
         when(defaultExerciseService.getDefaultExerciseById("1")).thenReturn(exercise);
 
