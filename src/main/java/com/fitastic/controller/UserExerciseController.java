@@ -1,7 +1,6 @@
 package com.fitastic.controller;
 
 import com.fitastic.entity.UserExercise;
-import com.fitastic.repository.UserExerciseRepository;
 import com.fitastic.service.UserExerciseService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,6 @@ import java.util.List;
 @RequestMapping("/api/userExercises")
 public class UserExerciseController {
 
-    private UserExerciseRepository userExerciseRepository;
     private UserExerciseService userExerciseService;
 
     /**

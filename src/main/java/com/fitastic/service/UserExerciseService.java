@@ -1,6 +1,5 @@
 package com.fitastic.service;
 
-import com.fitastic.entity.DefaultExercise;
 import com.fitastic.entity.UserExercise;
 import com.fitastic.repository.UserExerciseRepository;
 import lombok.AllArgsConstructor;
