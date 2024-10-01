@@ -1,7 +1,10 @@
 package com.fitastic.service;
 
-import com.fitastic.dto.UserRegisterDTO;
+import com.fitastic.dto.RegisterRequestDTO;
+import com.fitastic.dto.RegisterResponseDTO;
 import com.fitastic.entity.*;
+import com.fitastic.exception.EntityAlreadyExistsException;
+import com.fitastic.exception.UserValidationException;
 import com.fitastic.repository.TokenRepository;
 import com.fitastic.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,20 +38,18 @@ public class AuthService {
 
 
     /**
-     * Registers a new user in the datababse.
+     * Registers a new user in the database.
      * If the email is already registered, it returns an error response.
      * Otherwise, the user is saved in the database, and access/refresh tokens are generated.
      *
      * @param request the user registration request containing email, username, password and confirmPassword
      * @return an AuthResponse indicating whether the registration was successful or if the user already exists
      */
-    public AuthResponse register(UserRegisterDTO request) {
+    public RegisterResponseDTO register(RegisterRequestDTO request) {
         String emailToRegister = request.getEmail();
-        boolean isUserAlreadyExist = userRepository.findByEmail(emailToRegister).isPresent();
-
-        if(isUserAlreadyExist) {
-            return new AuthResponse("User already exist");
-        }
+        boolean isUserAlreadyExist = userRepository.findByUsername(emailToRegister).isPresent();
+        if(isUserAlreadyExist) throw new EntityAlreadyExistsException("Email déjà utilisé");
+        boolean isMatchedPassword = !request.getConfirmPassword().equals(request.getPassword());
 
         User user = new User();
         user.setUsername(request.getUsername());
@@ -64,9 +65,9 @@ public class AuthService {
 
         saveUserToken(accessToken, refreshToken, user);
 
-        return new AuthResponse("User registration was successful");
-
+        return new RegisterResponseDTO("L'inscription a été un succès");
     }
+
 
     /**
      * Authenticates the user with the provided email and password.
@@ -83,7 +84,7 @@ public class AuthService {
                 )
         );
 
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        User user = userRepository.findByUsername(request.getEmail()).orElseThrow();
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
@@ -149,7 +150,7 @@ public class AuthService {
         String token = authHeader.substring(7);
         String email = jwtService.extractUserEmail(token);
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByUsername(email)
                 .orElseThrow(() -> new RuntimeException("No user found"));
 
         boolean isValidRefreshToken = jwtService.isValidRefreshToken(token, user);

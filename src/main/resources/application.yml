@@ -10,7 +10,6 @@ logging:
           mongodb:
             core:
               MongoTemplate: DEBUG
-              MongoTemplate: 'DEBUG'
 application:
   security:
     jwt:

@@ -83,7 +83,7 @@ public class JwtService {
                 .map(refreshToken -> !refreshToken.isLoggedOut())
                 .orElse(false);
 
-        return (email.equals(user.getEmail())) && !isTokenExpired(token) && validRefreshToken;
+        return (email.equals(user.getUsername())) && !isTokenExpired(token) && validRefreshToken;
     }
 
     /**

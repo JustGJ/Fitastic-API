@@ -33,8 +33,6 @@ public class User implements UserDetails {
     @Email(message = "Email is not valid", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     @NotEmpty(message = "Email cannot be empty")
     @NonNull
-
-
     private String email;
     private String password;
     private String confirmPassword;
