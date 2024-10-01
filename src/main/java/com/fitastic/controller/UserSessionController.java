@@ -33,9 +33,9 @@ public class UserSessionController {
     public ResponseEntity<List<UserSession>> getAllUserSessions(){
         List<UserSession> userSessions = userSessionService.getAllUserSessions();
         if(userSessions.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(userSessions);
     }
 
     /**
@@ -51,6 +51,13 @@ public class UserSessionController {
                 .body(newUserSession);
     }
 
+    /**
+     * Retrieves a specific user session by its ID.
+     *
+     * @param id The ID of the user session to retrieve.
+     * @return ResponseEntity containing the requested UserSession or NOT_FOUND if not exists.
+     */
+
     @GetMapping("/{id}")
     public ResponseEntity<UserSession> getUserSession(@PathVariable String id) {
         try {
@@ -61,6 +68,14 @@ public class UserSessionController {
         }
     }
 
+    /**
+     * Updates an existing user exercise.
+     *
+     * @param id The ID of the user session to update.
+     * @param updatedUserSession The UserSession object containing update information.
+     * @return ResponseEntity containing the updated UserSession or NOT_FOUND if not exists.
+     */
+
     @PatchMapping("/{id}")
     public ResponseEntity<UserSession> updateUserSession(@PathVariable String id, @RequestBody UserSession updatedUserSession) {
         UserSession userSession = userSessionService.updateUserSession(id, updatedUserSession);
@@ -70,6 +85,12 @@ public class UserSessionController {
         return ResponseEntity.ok(userSession);
     }
 
+    /**
+     * Deletes a user session by its ID.
+     *
+     * @param id The ID of the user session to delete.
+     * @return ResponseEntity with NO_CONTENT if successful, or NOT_FOUND if the session doesn't exist.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<UserSession> deleteUserSession(@PathVariable String id){
         try{
