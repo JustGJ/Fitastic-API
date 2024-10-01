@@ -12,5 +12,5 @@ import java.util.Optional;
  * and custom query methods for User entities.
  */
 public interface UserRepository extends MongoRepository<User, String> {
-    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String email);
 }

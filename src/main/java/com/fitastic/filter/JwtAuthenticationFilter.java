@@ -57,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String username = jwtService.extractUserEmail(token);
+        String username = jwtService.extractUsername(token);
 
         // Check if username is present and if the user is not already authenticated
         boolean isAuthenticated = SecurityContextHolder.getContext().getAuthentication() != null;

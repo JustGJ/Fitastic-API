@@ -1,6 +1,5 @@
 package com.fitastic.service;
 
-import com.fitastic.dto.UserRegisterDTO;
 import com.fitastic.entity.*;
 import com.fitastic.repository.TokenRepository;
 import com.fitastic.repository.UserRepository;
@@ -26,13 +25,12 @@ import java.util.List;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
-
+    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+    private final TokenRepository tokenRepository;
 
+    private final AuthenticationManager authenticationManager;
 
     /**
      * Registers a new user in the datababse.
@@ -42,29 +40,30 @@ public class AuthService {
      * @param request the user registration request containing email, username, password and confirmPassword
      * @return an AuthResponse indicating whether the registration was successful or if the user already exists
      */
-    public AuthResponse register(UserRegisterDTO request) {
-        String emailToRegister = request.getEmail();
-        boolean isUserAlreadyExist = userRepository.findByEmail(emailToRegister).isPresent();
+    public AuthenticationResponse register(User request) {
+        boolean userAlreadyExist = userRepository.findByUsername(request.getUsername()).isPresent();
 
-        if(isUserAlreadyExist) {
-            return new AuthResponse("User already exist");
+        if (userAlreadyExist) {
+            return new AuthenticationResponse(null, null,"User already exist");
         }
 
         User user = new User();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
-        user.setRole(Role.USER);
 
-        userRepository.save(user);
+
+        user.setRole(request.getRole());
+
+        user = userRepository.save(user);
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
         saveUserToken(accessToken, refreshToken, user);
 
-        return new AuthResponse("User registration was successful");
+        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
 
     }
 
@@ -75,22 +74,22 @@ public class AuthService {
      * @param request the user login request containing email and password
      * @return a LoginResponse containing access and refresh tokens along with a success message
      */
-    public LoginResponse login(User request) {
+    public AuthenticationResponse login(User request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        request.getUsername(),
                         request.getPassword()
                 )
         );
 
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
         revokeAllTokenByUser(user);
         saveUserToken(accessToken, refreshToken, user);
 
-        return new LoginResponse(accessToken, refreshToken, "User login was successful");
+        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
 
     }
 
@@ -107,8 +106,8 @@ public class AuthService {
             return;
         }
 
-        validTokens.forEach(validToken -> {
-            validToken.setLoggedOut(true);
+        validTokens.forEach(t-> {
+            t.setLoggedOut(true);
         });
 
         tokenRepository.saveAll(validTokens);
@@ -144,13 +143,15 @@ public class AuthService {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         boolean isValidHeader = authHeader == null || !authHeader.startsWith("Bearer ");
 
-        if (isValidHeader) return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        if(isValidHeader) return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
 
         String token = authHeader.substring(7);
-        String email = jwtService.extractUserEmail(token);
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("No user found"));
+        String username = jwtService.extractUsername(token);
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()->new RuntimeException("No user found"));
 
         boolean isValidRefreshToken = jwtService.isValidRefreshToken(token, user);
 
@@ -161,7 +162,7 @@ public class AuthService {
             revokeAllTokenByUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
-            return new ResponseEntity(new LoginResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
+            return new ResponseEntity(new AuthenticationResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
         }
 
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);

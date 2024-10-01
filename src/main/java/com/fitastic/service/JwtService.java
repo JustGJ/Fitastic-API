@@ -23,8 +23,6 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private final TokenRepository tokenRepository;
-
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
 
@@ -35,13 +33,16 @@ public class JwtService {
     private long refreshTokenExpire;
 
 
+    private final TokenRepository tokenRepository;
+
+
     /**
      * Extracts the username from the provided JWT token.
      *
      * @param token the JWT token from which the username will be extracted
      * @return the username (subject) contained in the token
      */
-    public String extractUserEmail(String token){
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -51,20 +52,15 @@ public class JwtService {
      * @param token the JWT token to be checked
      * @return true if the token has expired, false otherwise
      */
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
+    public boolean isValid(String token, UserDetails user) {
+        String username = extractUsername(token);
 
-    /**
-     * Validates whether the given JWT token is still valid and belongs to the provided user.
-     *
-     * @param token the JWT token to be validated
-     * @param user  the user details to compare with the token's claims
-     * @return true if the token is valid, false otherwise
-     */
-    public boolean isValid(String token, UserDetails user){
-        String username = extractUserEmail(token);
-        return (username.equals(user.getUsername())) && !isTokenExpired(token);
+        boolean validToken = tokenRepository
+                .findByAccessToken(token)
+                .map(t -> !t.isLoggedOut())
+                .orElse(false);
+
+        return (username.equals(user.getUsername())) && !isTokenExpired(token) && validToken;
     }
 
     /**
@@ -76,14 +72,24 @@ public class JwtService {
      * @return true if the refresh token is valid, false otherwise
      */
     public boolean isValidRefreshToken(String token, User user) {
-        String email = extractUserEmail(token);
+        String username = extractUsername(token);
 
         boolean validRefreshToken = tokenRepository
                 .findByRefreshToken(token)
-                .map(refreshToken -> !refreshToken.isLoggedOut())
+                .map(t -> !t.isLoggedOut())
                 .orElse(false);
 
-        return (email.equals(user.getEmail())) && !isTokenExpired(token) && validRefreshToken;
+        return (username.equals(user.getUsername())) && !isTokenExpired(token) && validRefreshToken;
+    }
+
+    /**
+     * Checks if the provided JWT token is expired.
+     *
+     * @param token the JWT token to be checked
+     * @return true if the token has expired, false otherwise
+     */
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 
     /**
@@ -104,7 +110,8 @@ public class JwtService {
      * @param <T>     the type of the claim to be extracted
      * @return the extracted claim
      */
-    public <T> T extractClaim(String token, Function<Claims, T> resolver){
+
+    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = extractAllClaims(token);
         return resolver.apply(claims);
     }
@@ -115,7 +122,7 @@ public class JwtService {
      * @param token the JWT token from which the claims will be extracted
      * @return the claims contained in the token
      */
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) {
         return Jwts
                 .parser()
                 .verifyWith(getSigninKey())
@@ -153,12 +160,12 @@ public class JwtService {
      * @param expireTime the expiration time in milliseconds for the token
      * @return the generated token
      */
-    public String generateToken(User user, long expireTime){
+    private String generateToken(User user, long expireTime) {
         return Jwts
                 .builder()
-                .subject(user.getEmail())
+                .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expireTime))
+                .expiration(new Date(System.currentTimeMillis() + expireTime ))
                 .signWith(getSigninKey())
                 .compact();
     }
