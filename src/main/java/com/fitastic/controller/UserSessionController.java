@@ -1,6 +1,6 @@
 package com.fitastic.controller;
 
-
+import com.fitastic.entity.User;
 import com.fitastic.entity.UserSession;
 import com.fitastic.service.UserSessionService;
 import jakarta.validation.Valid;
@@ -21,7 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api/userSessions")
 public class UserSessionController {
-
 
     private UserSessionService userSessionService;
 
@@ -52,4 +51,32 @@ public class UserSessionController {
                 .body(newUserSession);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserSession> getUserSession(@PathVariable String id) {
+        try {
+            UserSession userSession = userSessionService.getUserSessionById(id);
+            return ResponseEntity.ok(userSession);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserSession> updateUserSession(@PathVariable String id, @RequestBody UserSession updatedUserSession) {
+        UserSession userSession = userSessionService.updateUserSession(id, updatedUserSession);
+        if(userSession == null){
+            return  ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userSession);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserSession> deleteUserSession(@PathVariable String id){
+        try{
+            userSessionService.deleteUserSessionById(id);
+            return ResponseEntity.noContent().build();
+        }catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
