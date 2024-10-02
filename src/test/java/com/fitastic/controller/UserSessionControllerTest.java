@@ -2,9 +2,9 @@ package com.fitastic.controller;
 
 import com.fitastic.entity.UserSession;
 import com.fitastic.service.UserSessionService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,6 +31,9 @@ class UserSessionControllerTest {
     @MockBean
     private UserSessionService userSessionService;
 
+    @Value("${token}")
+    private String token;
+
 
     /**
      * Test case: Verify that GET request to /api/userSessions returns all user sessions.
@@ -51,7 +54,9 @@ class UserSessionControllerTest {
 
         when(userSessionService.getAllUserSessions()).thenReturn(Arrays.asList(session1, session2));
 
-        mockMvc.perform(get("/api/userSessions"))
+
+        mockMvc.perform(get("/api/userSessions")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value("1"))
@@ -73,19 +78,22 @@ class UserSessionControllerTest {
         session.setId("1");
         session.setName("Session");
         session.setUserId("1");
+        session.setUserSessionDateId("1");
 
         when(userSessionService.createUserSession(any(UserSession.class))).thenReturn(session);
 
-        String sessionJson = "{\"id\":\"1\",\"name\":\"Session\",\"userId\" : \"1\"}";
+        String sessionJson = "{\"id\":\"1\",\"name\":\"Session\",\"userId\" : \"1\", \"userSessionDateId\" : \"1\"}";
 
         mockMvc.perform(post("/api/userSessions")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(sessionJson))
+                        .content(sessionJson)
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/userSessions/1"))
+                .andExpect(header().string("Location", "/session/1"))
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("Session"))
-                .andExpect(jsonPath("$.userId").value("1"));
+                .andExpect(jsonPath("$.userId").value("1"))
+                .andExpect(jsonPath("$.userSessionDateId").value("1"));
     }
 
     /**
@@ -102,7 +110,8 @@ class UserSessionControllerTest {
 
         when(userSessionService.getUserSessionById("1")).thenReturn(session);
 
-        mockMvc.perform(get("/api/userSessions/1"))
+        mockMvc.perform(get("/api/userSessions/1")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value("1"))
@@ -121,24 +130,28 @@ class UserSessionControllerTest {
         session.setId("1");
         session.setName("Session");
         session.setUserId("1");
+        session.setUserSessionDateId("1");
 
         UserSession updatedSession = new UserSession();
         updatedSession.setId("1");
         updatedSession.setName("UpdatedSession");
-        updatedSession.setUserId("1");
+        updatedSession.setUserId("2");
+        updatedSession.setUserSessionDateId("2");
 
         when(userSessionService.updateUserSession("1", updatedSession)).thenReturn(updatedSession);
 
-        String updatedSessionJson = "{\"id\":\"1\",\"name\":\"UpdatedSession\",\"userId\" : \"1\"}";
+        String updatedSessionJson = "{\"id\":\"1\",\"name\":\"UpdatedSession\",\"userId\" : \"2\", \"userSessionDateId\" : \"2\"}";
 
         mockMvc.perform(patch("/api/userSessions/1")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedSessionJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("UpdatedSession"))
-                .andExpect(jsonPath("$.userId").value("1"));
+                .andExpect(jsonPath("$.userId").value("2"))
+                .andExpect((jsonPath("$.userSessionDateId").value("2")));
     }
 
     /**
@@ -150,7 +163,8 @@ class UserSessionControllerTest {
     void shouldDeleteUserSession() throws Exception {
         doNothing().when(userSessionService).deleteUserSessionById("1");
 
-        mockMvc.perform(delete("/api/userSessions/1"))
+        mockMvc.perform(delete("/api/userSessions/1")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
 
         verify(userSessionService, times(1)).deleteUserSessionById("1");

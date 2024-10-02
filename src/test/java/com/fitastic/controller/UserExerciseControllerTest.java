@@ -4,6 +4,7 @@ import com.fitastic.entity.UserExercise;
 import com.fitastic.service.UserExerciseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,6 +31,9 @@ class UserExerciseControllerTest {
     @MockBean
     private UserExerciseService userExerciseService;
 
+    @Value("${token}")
+    private String token;
+
     /**
      * Test case: Verify that GET request to /api/userExercises returns all user exercises.
      *
@@ -49,7 +53,8 @@ class UserExerciseControllerTest {
 
         when(userExerciseService.getAll()).thenReturn(Arrays.asList(exercise1, exercise2));
 
-        mockMvc.perform(get("/api/userExercises"))
+        mockMvc.perform(get("/api/userExercises")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value("1"))
@@ -77,6 +82,7 @@ class UserExerciseControllerTest {
         String exerciseJson = "{\"id\":\"1\",\"name\":\"Push-up\",\"userId\" : \"1\"}";
 
         mockMvc.perform(post("/api/userExercises")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(exerciseJson))
                 .andExpect(status().isCreated())
@@ -106,6 +112,7 @@ class UserExerciseControllerTest {
         when(userExerciseService.updateUserExercise("1", exerciseUpdated)).thenReturn(exerciseUpdated);
 
         mockMvc.perform(patch("/api/userExercises/1")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\": \"1\", \"name\": \"Squat\", \"userId\" : \"1\"}"))
                 .andExpect(status().isOk())
@@ -129,7 +136,8 @@ class UserExerciseControllerTest {
 
         when(userExerciseService.getUserExerciseById("1")).thenReturn(exercise);
 
-        mockMvc.perform(get("/api/userExercises/1"))
+        mockMvc.perform(get("/api/userExercises/1")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value("1"))
@@ -151,7 +159,8 @@ class UserExerciseControllerTest {
 
         doNothing().when(userExerciseService).deleteUserExerciseById("1");
 
-        mockMvc.perform(delete("/api/userExercises/1"))
+        mockMvc.perform(delete("/api/userExercises/1")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
 
         verify(userExerciseService, times(1)).deleteUserExerciseById("1");

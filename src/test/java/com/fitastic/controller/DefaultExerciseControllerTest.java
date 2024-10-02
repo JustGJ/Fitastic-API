@@ -4,6 +4,7 @@ import com.fitastic.entity.DefaultExercise;
 import com.fitastic.service.DefaultExerciseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,6 +30,9 @@ class DefaultExerciseControllerTest {
     @MockBean
     private DefaultExerciseService defaultExerciseService;
 
+    @Value("${token}")
+    private String token;
+
     /**
      * Test case: Verify that the GET request to /api/defaultExercises returns a list of default exercises.
      *
@@ -46,7 +50,8 @@ class DefaultExerciseControllerTest {
 
         when(defaultExerciseService.getAll()).thenReturn(Arrays.asList(exercise1, exercise2));
 
-        mockMvc.perform(get("/api/defaultExercises"))
+        mockMvc.perform(get("/api/defaultExercises")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value("1"))
@@ -68,7 +73,8 @@ class DefaultExerciseControllerTest {
 
         when(defaultExerciseService.getDefaultExerciseById("1")).thenReturn(exercise);
 
-        mockMvc.perform(get("/api/defaultExercises/1"))
+        mockMvc.perform(get("/api/defaultExercises/1")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value("1"))
