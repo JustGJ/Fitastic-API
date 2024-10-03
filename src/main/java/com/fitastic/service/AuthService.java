@@ -1,6 +1,11 @@
 package com.fitastic.service;
 
+import com.fitastic.dto.LoginRequestDTO;
+import com.fitastic.dto.RegisterRequestDTO;
+import com.fitastic.dto.AuthResponseDTO;
 import com.fitastic.entity.*;
+import com.fitastic.exception.EntityAlreadyExistsException;
+import com.fitastic.exception.InvalidCredentialsException;
 import com.fitastic.repository.TokenRepository;
 import com.fitastic.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,24 +42,23 @@ public class AuthService {
      * If the email is already registered, it returns an error response.
      * Otherwise, the user is saved in the database, and access/refresh tokens are generated.
      *
-     * @param request the user registration request containing email, username, password and confirmPassword
+     * @param registerRequestDTO the user registration request containing email, username, password and confirmPassword
      * @return an AuthResponse indicating whether the registration was successful or if the user already exists
      */
-    public AuthenticationResponse register(User request) {
-        boolean userAlreadyExist = userRepository.findByUsername(request.getUsername()).isPresent();
+    public AuthResponseDTO register(RegisterRequestDTO registerRequestDTO) {
+        boolean userAlreadyExist = userRepository.findByUsername(registerRequestDTO.getUsername()).isPresent();
 
-        if (userAlreadyExist) {
-            return new AuthenticationResponse(null, null,"User already exist");
-        }
+        if (userAlreadyExist) throw new EntityAlreadyExistsException("User already exist");
+
 
         User user = new User();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setFirstName(registerRequestDTO.getFirstName());
+        user.setLastName(registerRequestDTO.getLastName());
+        user.setUsername(registerRequestDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
 
 
-        user.setRole(request.getRole());
+        user.setRole(Role.USER);
 
         user = userRepository.save(user);
 
@@ -63,7 +67,7 @@ public class AuthService {
 
         saveUserToken(accessToken, refreshToken, user);
 
-        return new AuthenticationResponse(accessToken, refreshToken,"User registration was successful");
+        return new AuthResponseDTO(accessToken, refreshToken,"User registration was successful");
 
     }
 
@@ -71,27 +75,33 @@ public class AuthService {
      * Authenticates the user with the provided email and password.
      * If authentication is successful, new access and refresh tokens are generated.
      *
-     * @param request the user login request containing email and password
+     * @param loginRequestDTO the user login request containing email and password
      * @return a LoginResponse containing access and refresh tokens along with a success message
      */
-    public AuthenticationResponse login(User request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+    public AuthResponseDTO login(LoginRequestDTO loginRequestDTO) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequestDTO.getUsername(),
+                            loginRequestDTO.getPassword()
+                    )
+            );
+        } catch (Exception e) {
+            throw new InvalidCredentialsException("Incorrect credentials");
+        }
 
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(loginRequestDTO.getUsername())
+                .orElseThrow(() -> new InvalidCredentialsException("Incorrect credentials"));
+
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
         revokeAllTokenByUser(user);
         saveUserToken(accessToken, refreshToken, user);
 
-        return new AuthenticationResponse(accessToken, refreshToken, "User login was successful");
-
+        return new AuthResponseDTO(accessToken, refreshToken, "User login was successful");
     }
+
 
     /**
      * Revokes all valid access tokens associated with a given user.
@@ -162,7 +172,7 @@ public class AuthService {
             revokeAllTokenByUser(user);
             saveUserToken(accessToken, refreshToken, user);
 
-            return new ResponseEntity(new AuthenticationResponse(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
+            return new ResponseEntity(new AuthResponseDTO(accessToken, refreshToken, "New token generated"), HttpStatus.OK);
         }
 
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);

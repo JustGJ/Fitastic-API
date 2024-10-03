@@ -1,11 +1,11 @@
-package com.fitastic.entity;
+package com.fitastic.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AuthenticationResponse {
+public class AuthResponseDTO {
     private String accessToken;
 
     private String refreshToken;
