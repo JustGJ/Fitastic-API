@@ -1,12 +1,15 @@
 package com.fitastic.controller;
 
-import com.fitastic.entity.AuthenticationResponse;
-import com.fitastic.entity.LoginResponse;
-import com.fitastic.entity.User;
+import com.fitastic.dto.APIResponse;
+import com.fitastic.dto.LoginRequestDTO;
+import com.fitastic.dto.RegisterRequestDTO;
+import com.fitastic.dto.AuthResponseDTO;
 import com.fitastic.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,28 +25,47 @@ public class AuthController {
 
     private final AuthService authService;
 
+    public static final String SUCCESS = "Success";
+
+
     /**
      * Registers a new user.
      *
-     * @param request The user registration data.
+     * @param registerRequestDTO The user registration data.
      * @return AuthResponse containing authentication information.
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody User request
-    ) {
-        return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<APIResponse<AuthResponseDTO>> register(@Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
+
+        AuthResponseDTO registerResponseDTO = authService.register(registerRequestDTO);
+
+        APIResponse<AuthResponseDTO> responseDTO = APIResponse
+                .<AuthResponseDTO>builder()
+                .status(SUCCESS)
+                .data(registerResponseDTO)
+                .build();
+
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     /**
      * Authenticates a user based on their login information.
      *
-     * @param request The user login data.
+     * @param loginRequestDTO The user login data.
      * @return AuthResponse containing authentication information.
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody User request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<APIResponse<AuthResponseDTO>> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+
+        AuthResponseDTO loginResponseDTO = authService.login(loginRequestDTO);
+
+        APIResponse<AuthResponseDTO> responseDTO = APIResponse
+                .<AuthResponseDTO>builder()
+                .status(SUCCESS)
+                .data(loginResponseDTO)
+                .build();
+
+        return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
     /**
