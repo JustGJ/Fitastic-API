@@ -71,6 +71,7 @@ public class UserExerciseController {
         return ResponseEntity.ok(exercise);
     }
 
+
     /**
      * Retrieves a specific user exercise by its ID.
      *
