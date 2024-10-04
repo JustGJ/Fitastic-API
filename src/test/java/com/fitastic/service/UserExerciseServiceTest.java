@@ -132,6 +132,7 @@ class UserExerciseServiceTest {
     void shouldDeleteUserExerciseById() {
         // Creating a mock UserExercise object
         UserExercise userExercise = new UserExercise();
+        userExercise.setId("1");
         userExercise.setUserId("1");
         userExercise.setName("Exercise");
         userExercise.setInstructions(new String[]{"Upper body"});
