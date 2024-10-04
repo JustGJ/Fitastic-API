@@ -1,13 +1,13 @@
 package com.fitastic.service;
 
-import com.fitastic.entity.DefaultExercise;
 import com.fitastic.entity.UserExercise;
 import com.fitastic.repository.UserExerciseRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 /**
  * Service class for handling UserExercise-related business logic.
@@ -39,17 +39,19 @@ public class UserExerciseService {
         return userExerciseRepository.save(userExercise);
     }
 
-    /**
-     * Retrieves a specific UserExercise by its ID.
-     *
-     * @param id The ID of the UserExercise to retrieve.
-     * @return The requested UserExercise object, or null if not found.
-     */
-    public UserExercise getUserExerciseById(String id) {
-        Optional<UserExercise> exercise = userExerciseRepository.findById(id);
-        return exercise.orElse(null);
-    }
 
+    /**
+     * Retrieves a UserExercise by its ID.
+     *
+     * @param id The ID of the UserExercise.
+     * @return The UserExercise object.
+     * @throws NoSuchElementException if not found.
+     */
+    @Cacheable(value = "userExercise")
+    public UserExercise getUserExerciseById(String id) {
+        return userExerciseRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User exercise not found with id" + id));
+    }
     /**
      * Updates an existing UserExercise.
      *
@@ -75,13 +77,12 @@ public class UserExerciseService {
      * Deletes a UserExercise by its ID.
      *
      * @param id The ID of the UserExercise to delete.
-     * @throws RuntimeException if the exercise is not found.
+     * @throws NoSuchElementException if the exercise is not found.
      */
     public void deleteUserExerciseById(String id) {
-        if (userExerciseRepository.existsById(id)){
-            userExerciseRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Exercise not found with id: " + id);
+        if (!userExerciseRepository.existsById(id)) {
+            throw new NoSuchElementException("Exercise not found with id: " + id);
         }
+        userExerciseRepository.deleteById(id);
     }
 }

@@ -1,12 +1,15 @@
-package com.fitastic.exception;
+package com.fitastic.handler;
 
+import com.fitastic.dto.APIResponse;
 import com.fitastic.dto.ErrorMessageDTO;
+import com.fitastic.exception.EntityAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -35,9 +38,12 @@ public class GlobalExceptionHandler {
      * @return A ResponseEntity with an error message and HTTP 404 status.
      */
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorMessageDTO> handleEntityNotFoundException(NoSuchElementException ex) {
-        ErrorMessageDTO error = new ErrorMessageDTO(ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ResponseEntity<APIResponse<?>> handleEntityNotFoundException(NoSuchElementException ex) {
+        APIResponse<?> serviceResponse = APIResponse.builder()
+                .status("FAILED")
+                .errors(Collections.singletonList(new ErrorMessageDTO(ex.getMessage())))
+                .build();
+        return new ResponseEntity<>(serviceResponse, HttpStatus.NOT_FOUND);
     }
 
     /**

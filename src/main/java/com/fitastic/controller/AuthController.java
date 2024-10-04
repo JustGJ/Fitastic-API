@@ -42,7 +42,7 @@ public class AuthController {
         APIResponse<AuthResponseDTO> responseDTO = APIResponse
                 .<AuthResponseDTO>builder()
                 .status(SUCCESS)
-                .results(registerResponseDTO)
+                .data(registerResponseDTO)
                 .build();
 
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
@@ -62,7 +62,7 @@ public class AuthController {
         APIResponse<AuthResponseDTO> responseDTO = APIResponse
                 .<AuthResponseDTO>builder()
                 .status(SUCCESS)
-                .results(loginResponseDTO)
+                .data(loginResponseDTO)
                 .build();
 
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);

@@ -1,5 +1,7 @@
 package com.fitastic.controller;
 
+import com.fitastic.dto.APIResponse;
+import com.fitastic.entity.User;
 import com.fitastic.entity.UserExercise;
 import com.fitastic.repository.UserExerciseRepository;
 import com.fitastic.service.UserExerciseService;
@@ -23,6 +25,8 @@ public class UserExerciseController {
 
     private UserExerciseRepository userExerciseRepository;
     private UserExerciseService userExerciseService;
+
+    public static final String SUCCESS = "SUCCESS";
 
     /**
      * Retrieves all user exercises.
@@ -70,32 +74,38 @@ public class UserExerciseController {
     /**
      * Retrieves a specific user exercise by its ID.
      *
-     * @param id The ID of the user exercise to retrieve.
-     * @return ResponseEntity containing the requested UserExercise or NOT_FOUND if not exists.
+     * @param id The ID of the user exercise.
+     * @return ResponseEntity with the UserExercise or 404 NOT_FOUND if not found.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<UserExercise> getUserExercise(@PathVariable String id) {
-        try {
-            UserExercise exercise = userExerciseService.getUserExerciseById(id);
-            return ResponseEntity.ok(exercise);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> getUserExercise(@PathVariable String id) {
+        UserExercise userExercise = userExerciseService.getUserExerciseById(id);
+
+        APIResponse<UserExercise> response = APIResponse
+                .<UserExercise>builder()
+                .status(SUCCESS)
+                .data(userExercise)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
     /**
-     * Deletes a user exercise by its ID.
+     * Deletes a specific UserExercise by its ID.
      *
-     * @param id The ID of the user exercise to delete.
-     * @return ResponseEntity with NO_CONTENT if successful, or NOT_FOUND if the exercise doesn't exist.
+     * @param id The ID of the UserExercise to delete.
+     * @return ResponseEntity with APIResponse indicating success or failure.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserExercise> deleteUserExercise(@PathVariable String id) {
-        try {
-            userExerciseService.deleteUserExerciseById(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<APIResponse<?>> deleteUserExercise(@PathVariable String id) {
+        userExerciseService.deleteUserExerciseById(id);
+        APIResponse<Void> response = APIResponse
+                .<Void>builder()
+                .status("SUCCESS")
+                .data(null)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
+
 }

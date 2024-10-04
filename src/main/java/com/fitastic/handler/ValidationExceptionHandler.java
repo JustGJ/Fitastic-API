@@ -1,5 +1,6 @@
 package com.fitastic.handler;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,6 +17,7 @@ import java.util.Map;
  * specifically targeting field-level validation failures.
  */
 @RestControllerAdvice
+@Order(1)
 public class ValidationExceptionHandler {
 
     /**

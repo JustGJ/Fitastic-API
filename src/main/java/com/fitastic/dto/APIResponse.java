@@ -16,6 +16,6 @@ import java.util.List;
 public class APIResponse<T> {
     private String status;
     private List<ErrorMessageDTO> errors;
-    private T results;
+    private T data;
 
 }

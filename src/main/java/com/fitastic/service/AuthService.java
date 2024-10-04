@@ -50,7 +50,6 @@ public class AuthService {
 
         if (userAlreadyExist) throw new EntityAlreadyExistsException("User already exist");
 
-
         User user = new User();
         user.setFirstName(registerRequestDTO.getFirstName());
         user.setLastName(registerRequestDTO.getLastName());
