@@ -1,7 +1,6 @@
 package com.fitastic.controller;
 
 import com.fitastic.dto.APIResponse;
-import com.fitastic.entity.User;
 import com.fitastic.entity.UserExercise;
 import com.fitastic.repository.UserExerciseRepository;
 import com.fitastic.service.UserExerciseService;
