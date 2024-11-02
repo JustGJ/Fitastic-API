@@ -29,12 +29,15 @@ public class DefaultExerciseController {
      * @return ResponseEntity containing a list of DefaultExercise objects or NO_CONTENT if empty.
      */
     @GetMapping
-    public ResponseEntity<List<DefaultExercise>> getExercises() {
-        List<DefaultExercise> exercises = defaultExerciseService.getAll();
-        if (exercises.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(exercises, HttpStatus.OK);
+    public ResponseEntity<APIResponse<List<DefaultExercise>>> getDefaultExercises() {
+        List<DefaultExercise> defaultExercises = defaultExerciseService.getAll();
+        APIResponse<List<DefaultExercise>> response = APIResponse
+                .<List<DefaultExercise>>builder()
+                .status(SUCCESS)
+                .data(defaultExercises)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
