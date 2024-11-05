@@ -22,7 +22,6 @@ import java.util.List;
 @RequestMapping("/api/userExercises")
 public class UserExerciseController {
 
-    private UserExerciseRepository userExerciseRepository;
     private UserExerciseService userExerciseService;
 
     public static final String SUCCESS = "SUCCESS";
@@ -30,15 +29,18 @@ public class UserExerciseController {
     /**
      * Retrieves all user exercises.
      *
-     * @return ResponseEntity containing a list of UserExercise objects or NO_CONTENT if empty.
+     * @return ResponseEntity containing a list of UserExercise objects or error message.
      */
     @GetMapping
-    public ResponseEntity<List<UserExercise>> getAllUserExercises() {
-        List<UserExercise> exercises = userExerciseService.getAll();
-        if (exercises.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(exercises, HttpStatus.OK);
+    public ResponseEntity<APIResponse<List<UserExercise>>> getAllUserExercises() {
+        List<UserExercise> userExercises = userExerciseService.getAll();
+       APIResponse<List<UserExercise>> response = APIResponse
+               .<List<UserExercise>>builder()
+               .status(SUCCESS)
+               .data(userExercises)
+               .build();
+
+       return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**

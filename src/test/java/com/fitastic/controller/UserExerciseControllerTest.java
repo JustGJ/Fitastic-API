@@ -57,12 +57,12 @@ class UserExerciseControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value("1"))
-                .andExpect(jsonPath("$[0].name").value("Push-up"))
-                .andExpect(jsonPath("$[0].userId").value("1"))
-                .andExpect(jsonPath("$[1].id").value("2"))
-                .andExpect(jsonPath("$[1].name").value("Squat"))
-                .andExpect(jsonPath("$[1].userId").value("1"));
+                .andExpect(jsonPath("$.data[0].id").value("1"))
+                .andExpect(jsonPath("$.data[0].name").value("Push-up"))
+                .andExpect(jsonPath("$.data[0].userId").value("1"))
+                .andExpect(jsonPath("$.data[1].id").value("2"))
+                .andExpect(jsonPath("$.data[1].name").value("Squat"))
+                .andExpect(jsonPath("$.data[1].userId").value("1"));
     }
 
     /**
@@ -140,9 +140,9 @@ class UserExerciseControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value("1"))
-                .andExpect(jsonPath("$.name").value("Push-up"))
-                .andExpect(jsonPath("$.userId").value("1"));
+                .andExpect(jsonPath("$.data.id").value("1"))
+                .andExpect(jsonPath("$.data.name").value("Push-up"))
+                .andExpect(jsonPath("$.data.userId").value("1"));
     }
 
     /**

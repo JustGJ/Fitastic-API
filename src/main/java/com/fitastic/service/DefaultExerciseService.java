@@ -18,9 +18,7 @@ public class DefaultExerciseService {
 
     // Retrieve all DefaultExercises from the database
     @Cacheable(value = "defaultExercises")
-    public List<DefaultExercise> getAll() {
-        return defaultExerciseRepository.findAll();
-    }
+    public List<DefaultExercise> getAll() {return defaultExerciseRepository.findAll(); }
 
     // Retrieve a specific DefaultExercise by its ID
     // Returns null if the exercise is not found
