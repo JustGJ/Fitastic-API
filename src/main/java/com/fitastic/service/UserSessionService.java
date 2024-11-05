@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -39,8 +40,8 @@ public class UserSessionService {
     }
 
     public UserSession getUserSessionById(String id) {
-        Optional<UserSession>  userSession = userSessionRepository.findById(id);
-        return userSession.orElse(null);
+        return userSessionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User session not found with id " + id));
     }
 
     public UserSession updateUserSession(String id, UserSession updatedUserSession) {
@@ -52,10 +53,10 @@ public class UserSessionService {
     }
 
     public void deleteUserSessionById(String id){
-        if(userSessionRepository.existsById(id)) {
-            userSessionRepository.deleteById(id);
+        if(!userSessionRepository.existsById(id)) {
+            throw new NoSuchElementException("UserSession not found with id: " + id);
         }else {
-            throw new RuntimeException("UserSession not found with id: " + id);
+            userSessionRepository.deleteById(id);
         }
     }
 }

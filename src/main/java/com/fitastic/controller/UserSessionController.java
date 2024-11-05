@@ -1,13 +1,12 @@
 package com.fitastic.controller;
 
-import com.fitastic.entity.User;
+import com.fitastic.dto.APIResponse;
 import com.fitastic.entity.UserSession;
 import com.fitastic.service.UserSessionService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -23,19 +22,24 @@ import java.util.List;
 public class UserSessionController {
 
     private UserSessionService userSessionService;
+    public static final String SUCCESS = "SUCCESS";
 
     /**
      * Retrieves all user Sessions.
      *
-     * @return ResponseEntity containing a list of UserSession objects or NO_CONTENT if empty.
+     * @return ResponseEntity containing a list of UserSession objects or error message.
      */
     @GetMapping
-    public ResponseEntity<List<UserSession>> getAllUserSessions(){
+    public ResponseEntity<APIResponse<List<UserSession>>> getAllUserSessions(){
         List<UserSession> userSessions = userSessionService.getAllUserSessions();
-        if(userSessions.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(userSessions);
+
+        APIResponse<List<UserSession>> response = APIResponse
+                .<List<UserSession>>builder()
+                .status(SUCCESS)
+                .data(userSessions)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -59,13 +63,17 @@ public class UserSessionController {
      */
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserSession> getUserSession(@PathVariable String id) {
-        try {
-            UserSession userSession = userSessionService.getUserSessionById(id);
-            return ResponseEntity.ok(userSession);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> getUserSession(@PathVariable String id) {
+
+        UserSession userSession = userSessionService.getUserSessionById(id);
+
+        APIResponse<UserSession> response = APIResponse
+                .<UserSession>builder()
+                .status(SUCCESS)
+                .data(userSession)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -92,12 +100,15 @@ public class UserSessionController {
      * @return ResponseEntity with NO_CONTENT if successful, or NOT_FOUND if the session doesn't exist.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserSession> deleteUserSession(@PathVariable String id){
-        try{
-            userSessionService.deleteUserSessionById(id);
-            return ResponseEntity.noContent().build();
-        }catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<APIResponse<?>> deleteUserSession(@PathVariable String id) {
+        userSessionService.deleteUserSessionById(id);
+
+        APIResponse<Void> response = APIResponse
+                .<Void>builder()
+                .status("SUCCESS")
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 }
