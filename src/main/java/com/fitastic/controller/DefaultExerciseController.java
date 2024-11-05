@@ -1,5 +1,6 @@
 package com.fitastic.controller;
 
+import com.fitastic.dto.APIResponse;
 import com.fitastic.entity.DefaultExercise;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +21,23 @@ public class DefaultExerciseController {
 
     private final DefaultExerciseService defaultExerciseService;
 
+    public static final String SUCCESS = "SUCCESS";
+
     /**
      * Retrieves all default exercises.
      *
      * @return ResponseEntity containing a list of DefaultExercise objects or NO_CONTENT if empty.
      */
     @GetMapping
-    public ResponseEntity<List<DefaultExercise>> getExercises() {
-        List<DefaultExercise> exercises = defaultExerciseService.getAll();
-        if (exercises.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(exercises, HttpStatus.OK);
+    public ResponseEntity<APIResponse<List<DefaultExercise>>> getDefaultExercises() {
+        List<DefaultExercise> defaultExercises = defaultExerciseService.getAll();
+        APIResponse<List<DefaultExercise>> response = APIResponse
+                .<List<DefaultExercise>>builder()
+                .status(SUCCESS)
+                .data(defaultExercises)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -41,12 +47,16 @@ public class DefaultExerciseController {
      * @return ResponseEntity containing the requested DefaultExercise or NOT_FOUND if not exists.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<DefaultExercise> getExercise(@PathVariable String id) {
-        try {
-            DefaultExercise exercise = defaultExerciseService.getDefaultExerciseById(id);
-            return ResponseEntity.ok(exercise);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<?> getDefaultExercise(@PathVariable String id) {
+
+        DefaultExercise defaultExercise = defaultExerciseService.getDefaultExerciseById(id);
+
+        APIResponse<DefaultExercise> response = APIResponse
+                .<DefaultExercise>builder()
+                .status(SUCCESS)
+                .data(defaultExercise)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

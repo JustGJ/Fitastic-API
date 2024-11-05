@@ -50,7 +50,7 @@ public class UserExerciseService {
     @Cacheable(value = "userExercise")
     public UserExercise getUserExerciseById(String id) {
         return userExerciseRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User exercise not found with id" + id));
+                .orElseThrow(() -> new NoSuchElementException("User exercise not found with id " + id));
     }
     /**
      * Updates an existing UserExercise.
